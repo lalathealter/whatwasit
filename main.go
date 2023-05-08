@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	tele "gopkg.in/telebot.v3"
 
-	"github.com/lalathealter/whatwasit/local"
 	"github.com/lalathealter/whatwasit/postgre"
+	"github.com/lalathealter/whatwasit/controllers"
 )
 
 func main() {
@@ -16,7 +15,6 @@ func main() {
 
 	pref := tele.Settings{
 		Token: TGTOKEN,
-		Poller: &tele.LongPoller{Timeout: 10 * time.Second},
 	}
 
 	b, err := tele.NewBot(pref)
@@ -25,31 +23,15 @@ func main() {
 		return
 	}
 
-	b.Handle("/start", welcomeHandler)
-	b.Handle("/docs", welcomeHandler)
-	b.Handle("/help", welcomeHandler)
+	b.Handle("/start", controllers.WelcomeHandler)
+	b.Handle("/docs", controllers.WelcomeHandler)
+	b.Handle("/help", controllers.WelcomeHandler)
 
-	b.Handle("/set", setHandler)
-	b.Handle("/get", getHandler)
-	b.Handle("/del", delHandler)
+	b.Handle("/set", controllers.SetHandler)
+	b.Handle("/get", controllers.GetHandler)
+	b.Handle("/del", controllers.DelHandler)
 
 	fmt.Println("Starting the bot...")
 	b.Start()
-}
-
-func welcomeHandler(c tele.Context) error {
-	return c.Send(local.GetMessage(c, "hello"))
-}
-
-func setHandler(c tele.Context) error {
-	return c.Send(local.GetMessage(c, "set"))
-}
-
-func getHandler(c tele.Context) error {
-	return c.Send(local.GetMessage(c, "get"))
-}
-
-func delHandler(c tele.Context) error {
-	return c.Send(local.GetMessage(c, "del"))
 }
 
