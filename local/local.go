@@ -8,6 +8,9 @@ var messageTemplateMap = map[string]map[string]string{
 	"en": {
 		"hello": "Welcome to the WhatWasIt — a telegram bot that helps you to save and remember your login data!",
 		"set": "Login data for %s was set successfully",
+		"set-few-args": "You must provide three arguements: the name of the service, your Login and your Password",
+		"set-empty-arg": "Sorry, but empty arguements aren't allowed;",
+		"set-db-error": "Database Error: couldn't save credentials",
 		"get": "Login: %s\nPassword: %s",
 		"del": "Your login data for %s was deleted successfully",
 	},
