@@ -14,7 +14,7 @@ var messageTemplateMap = map[string]map[string]string{
 		"err-empty-arg": "error: empty arguments aren't allowed",
 		"err-long-arg": "error: argument too long",
 		"set-err-db-error": "server error: couldn't save credentials",
-		"get": "Login: %s\nPassword: %s",
+		"get": "Login: `%s`\nPassword: `%s`",
 		"get-err-db-error": "error: couldn't find credentials",
 		"del": "Your login data for %s was deleted successfully",
 		"del-err-db-error": "server error: couldn't delete credentials",

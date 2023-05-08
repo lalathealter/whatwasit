@@ -25,39 +25,45 @@ func generateAccessToken(c tele.Context, servName string) string {
 	return hexHashString
 }
 
-func readArgConsideringQuotes(input string) string {
-	if len(input) < 1 {
-		return ""
-	}
-
-	fch := input[0]
-	if fch == '\'' || fch == '"' {
-		if len(input) <= 2 {
-			return ""
+func parseSpacesAndQuotes(c tele.Context) []string {
+	passedArgs := make([]string, 0)
+	sb := strings.Builder{}
+	skipSpaces := true
+	for _, char := range c.Message().Payload {
+		if char == '"' {
+			if sb.Len() == 0 {
+				skipSpaces = false
+			} else {
+				passedArgs = append(passedArgs, sb.String())
+				sb.Reset()
+				skipSpaces = true
+			}
+			continue
 		}
-		return input[1 : len(input)-1]
+		
+		if char == ' ' && skipSpaces {
+			if sb.Len() > 0 {
+				passedArgs = append(passedArgs, sb.String())
+				sb.Reset()
+			}
+			continue
+		}
+		sb.WriteRune(char)
 	}
-	return input
+	passedArgs = append(passedArgs, sb.String())
+	return passedArgs
 }
 
-
 func parseArgs(c tele.Context, argCount int) ([]string, error) {
-	passedArgs := c.Args()
+	passedArgs := parseSpacesAndQuotes(c)
 	if len(passedArgs) < argCount {
 		return nil, errors.New("err-few-args")
 	}
-
-	argsSlice := passedArgs[:argCount]
-	for i, val := range argsSlice {
-		nextVal := readArgConsideringQuotes(val)
-		if nextVal == "" {
-			return nil, errors.New("err-empty-arg")
-		}
-		if len(nextVal) > MAX_ARG_LEN {
+	for _, val := range passedArgs {
+		if len(val) > MAX_ARG_LEN {
 			return nil, errors.New("err-long-arg")
 		}
-		argsSlice[i] = nextVal
 	}
 
-	return argsSlice, nil
+	return passedArgs, nil
 }

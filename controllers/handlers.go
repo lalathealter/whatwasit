@@ -42,7 +42,12 @@ func GetHandler(c tele.Context) error {
 	if err != nil {
 		return c.Send(local.GetMessage(c, "get-err-db-error"))
 	}
-	return c.Send(local.GetMessage(c, "get", result.Login, result.Password))
+	return c.Send(
+		local.GetMessage(c, "get", result.Login, result.Password),
+		&tele.SendOptions{
+			ParseMode: tele.ModeMarkdownV2,
+		},
+	)
 }
 
 func DelHandler(c tele.Context) error {
