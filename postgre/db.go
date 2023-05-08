@@ -69,7 +69,7 @@ func presetTables(db *sql.DB) {
 		`
 			CREATE TABLE IF NOT EXISTS whatwasit.credentials (
 				credential_id SERIAL PRIMARY KEY NOT NULL,
-				access_hash VARCHAR(64) NOT NULL,
+				access_hash CHAR(84) NOT NULL,
 				password VARCHAR(256) NOT NULL,
 				login VARCHAR(256) NOT NULL
 			)
