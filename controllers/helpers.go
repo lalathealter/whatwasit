@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"strconv"
+	"strings"
 
 	tele "gopkg.in/telebot.v3"
 )
@@ -14,9 +15,10 @@ const MAX_ARG_LEN = 256
 func generateAccessToken(c tele.Context, servName string) string {
 	userID := c.Chat().ID
 	privateID := []byte(strconv.FormatInt(userID, 10))
+	loweredServName := strings.ToLower(servName)
 
 	hasher := sha256.New()
-	hasher.Write([]byte(servName))
+	hasher.Write([]byte(loweredServName))
 	hashSum := hasher.Sum(privateID)
 
 	hexHashString := hex.EncodeToString(hashSum)

@@ -30,10 +30,34 @@ func SetHandler(c tele.Context) error {
 
 
 func GetHandler(c tele.Context) error {
-	return c.Send(local.GetMessage(c, "get"))
+	passedArgs, err := parseArgs(c, 1)
+	if err != nil {
+		return c.Send(local.GetMessage(c, err.Error()))
+	}
+	serviceName := passedArgs[0]
+	accToken := generateAccessToken(c, serviceName)
+
+	db := postgre.GetWrapper()
+	result, err := db.GetLogin(accToken)
+	if err != nil {
+		return c.Send(local.GetMessage(c, "get-err-db-error"))
+	}
+	return c.Send(local.GetMessage(c, "get", result.Login, result.Password))
 }
 
 func DelHandler(c tele.Context) error {
-	return c.Send(local.GetMessage(c, "del"))
+	passedArgs, err := parseArgs(c, 1)
+	if err != nil {
+		return c.Send(local.GetMessage(c, err.Error()))
+	}
+	serviceName := passedArgs[0]
+	accToken := generateAccessToken(c, serviceName)
+
+	db := postgre.GetWrapper()
+	if err := db.DelLogin(accToken); err != nil {
+		return c.Send(local.GetMessage(c, "del-err-db-error"))
+	}
+
+	return c.Send(local.GetMessage(c, "del", serviceName))
 }
 
