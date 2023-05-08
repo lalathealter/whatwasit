@@ -12,7 +12,7 @@ const (
 	SelectLoginByToken = `
 		SELECT login, password 
 		FROM whatwasit.credentials
-		WHERE accessToken=$1
+		WHERE access_hash=$1
 	;`
 
 	InsertLogin = `
@@ -23,7 +23,7 @@ const (
 
 	DeleteLoginByToken = `
 		DELETE FROM whatwasit.credentials
-		WHERE accessToken=$1
+		WHERE access_hash=$1
 	;`
 )
 
@@ -48,7 +48,7 @@ func (wr Wrapper) GetLogin(accessToken string) (LoginObject, error) {
 }
 
 func (wr Wrapper) SetLogin(login, password, accessToken string) error {
-	_, err := wr.db.Exec(SelectLoginByToken, login, password, accessToken)
+	_, err := wr.db.Exec(InsertLogin, login, password, accessToken)
 	return err
 }
 
