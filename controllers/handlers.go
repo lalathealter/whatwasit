@@ -68,6 +68,20 @@ func DelHandler(c tele.Context) error {
 	return c.Send(local.GetMessage(c, "del", serviceName))
 }
 
+func LocalHandler(c tele.Context) error {
+	passedArgs, err := parseArgs(c, 1)
+	if err != nil {
+		return c.Send(local.GetMessage(c, err.Error()))
+	}
+
+	langTag := passedArgs[0]
+	err = local.SetLocalLanguage(c, langTag)
+	if err != nil {
+		return c.Send(local.GetMessage(c, err.Error()))
+	}
+	return c.Send(local.GetMessage(c, "lang-set"))
+}
+
 func ScheduledCleanHandler() {
 	err := postgre.GetWrapper().CleanOld()
 	if err != nil {

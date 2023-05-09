@@ -32,6 +32,7 @@ func main() {
 	b.Handle("/set", controllers.SetHandler)
 	b.Handle("/get", controllers.GetHandler)
 	b.Handle("/del", controllers.DelHandler)
+	b.Handle("/lang", controllers.LocalHandler)
 
 	scheduleAutoDelete()
 	
