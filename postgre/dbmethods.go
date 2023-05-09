@@ -13,12 +13,17 @@ const (
 		SELECT login, password 
 		FROM whatwasit.credentials
 		WHERE access_hash=$1
+		LIMIT 1
 	;`
 
 	InsertLogin = `
 		INSERT INTO whatwasit.credentials
 		(login, password, access_hash)
-		VALUES ($1, $2, $3) 
+		VALUES ($1, $2, $3)  
+		ON CONFLICT (access_hash)
+			DO UPDATE SET 
+				login = EXCLUDED.login,
+				password = EXCLUDED.password
 	;`
 
 	DeleteLoginByToken = `
