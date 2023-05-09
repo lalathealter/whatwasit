@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/go-co-op/gocron"
@@ -37,6 +38,7 @@ func main() {
 	scheduleAutoDelete()
 	
 	fmt.Println("Starting the bot...")
+	go http.ListenAndServe("/", nil)
 	b.Start()
 }
 
