@@ -23,6 +23,21 @@ var messageTemplateMap = map[string]map[string]string{
 		"lang-set-err": "error; the language isn't supported",
 		"lang-err-no-message": "error; the response message can't be found",
 	},
+	"ru":  {
+		"hello": "Привет, меня зовут WhatWasIt — я Телеграм-бот который поможет вам сохранять и помнить свои пароли!",
+		"set": "Данные входа для %s были сохранены успешно",
+		"err-few-args": "ошибка: недостаточно аргументов",
+		"err-empty-arg": "ошибка: пустые аргументы не допускаются",
+		"err-long-arg": "ошибка: аргумент превышает максимально допустимое количество символов",
+		"set-err-db-error": "ошибка сервера: не получилось сохранить данные входа",
+		"get": "Логин: [`%s`]\nПароль: [`%s`]",
+		"get-err-db-error": "ошибка: не получилось найти данные входа",
+		"del": "Ваши данные входа для %s были успешно удалены",
+		"del-err-db-error": "ошибка сервера: не получилось удалить данные входа",
+		"lang-set": "язык переключён на: Русский",
+		"lang-set-err": "ошибка: язык не поддерживается",
+		"lang-err-no-message": "ошибка: шаблон ответа не найден",
+	},
 }
 
 const (
@@ -30,20 +45,21 @@ const (
 	defaultLangTag = "en"
 )
 
+var usersLangs = map[int64]string{}
+
 func SetLocalLanguage(c tele.Context, langTag string) (error) {
 	_, ok := messageTemplateMap[langTag]
 	if !ok {
 		return errors.New("lang-set-err")
 	}
-	c.Set(langKey, langTag)
+	usersLangs[c.Chat().ID] = langTag
 	return nil
 }
 
 func GetMessage(c tele.Context, msg string, responseArgs ...any) string {
-	lang, ok := c.Get(langKey).(string)
+	lang, ok := usersLangs[c.Chat().ID]
 	if !ok {
-		lang = defaultLangTag
-		c.Set(langKey, lang)
+		SetLocalLanguage(c, defaultLangTag)
 	}
 	message, ok := messageTemplateMap[lang][msg]
 	if !ok {
