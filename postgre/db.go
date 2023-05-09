@@ -8,13 +8,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 var currentDB *sql.DB
 func init() {
-	_ = godotenv.Load(".env")
+	// _ = godotenv.Load(".env")
 	// if err != nil {
 	// 	log.Fatalln(err)
 	// }
@@ -42,7 +42,7 @@ func GetEnv(key string) string {
 func getpsqlconn() string {
 	return fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		GetEnv("dbhost"), GetEnv("dbport"), GetEnv("dbuser"), GetEnv("dbpassword"), GetEnv("dbname"),
+		GetEnv("DBHOST"), GetEnv("DBPORT"), GetEnv("DBUSER"), GetEnv("DBPASSWORD"), GetEnv("DBNAME"),
 	)
 }
 func connect() *sql.DB {
