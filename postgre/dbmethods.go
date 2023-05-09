@@ -30,6 +30,24 @@ const (
 		DELETE FROM whatwasit.credentials
 		WHERE access_hash=$1
 	;`
+
+	UpdateKeepAlive = `
+		INSERT INTO whatwasit.visits
+		(access_hash)
+		VALUES ($1)
+		ON CONFLICT (access_hash)
+			DO UPDATE SET 
+				last_visit = NOW()
+	;`
+
+	DeleteTooOld = `
+	DELETE FROM whatwasit.credentials C
+	WHERE (SELECT NOW() - (
+		SELECT last_visit 
+		FROM whatwasit.visits
+		WHERE C.access_hash = access_hash 
+	)) > INTERVAL '15day' 
+	;`
 )
 
 type LoginObject struct {
@@ -49,16 +67,29 @@ func (wr Wrapper) GetLogin(accessToken string) (LoginObject, error) {
 	if len(resArr) < 1 {
 		return blankFormat, ErrorLoginNotFound
 	}
+	_, err = wr.db.Query(UpdateKeepAlive, accessToken)
+	if err != nil {
+		return blankFormat, err
+	}
 	return *resArr[0], nil
 }
 
 func (wr Wrapper) SetLogin(login, password, accessToken string) error {
 	_, err := wr.db.Exec(InsertLogin, login, password, accessToken)
+	if err != nil {
+		return err
+	}
+	_, err = wr.db.Query(UpdateKeepAlive, accessToken)
 	return err
 }
 
 func (wr Wrapper) DelLogin(accessToken string) error {
 	_, err := wr.db.Exec(DeleteLoginByToken, accessToken)
+	return err
+}
+
+func (wr Wrapper) CleanOld() error {
+	_, err := wr.db.Exec(DeleteTooOld)
 	return err
 }
 

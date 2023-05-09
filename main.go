@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/go-co-op/gocron"
 	tele "gopkg.in/telebot.v3"
 
-	"github.com/lalathealter/whatwasit/postgre"
 	"github.com/lalathealter/whatwasit/controllers"
+	"github.com/lalathealter/whatwasit/postgre"
 )
 
 func main() {
@@ -31,7 +33,16 @@ func main() {
 	b.Handle("/get", controllers.GetHandler)
 	b.Handle("/del", controllers.DelHandler)
 
+	scheduleAutoDelete()
+	
 	fmt.Println("Starting the bot...")
 	b.Start()
+}
+
+func scheduleAutoDelete() {
+	s := gocron.NewScheduler(time.UTC)
+	CRONSTR := postgre.GetEnv("CLEANSCHEDULE")
+	s.Cron(CRONSTR).Do(controllers.ScheduledCleanHandler)
+	s.StartAsync()
 }
 

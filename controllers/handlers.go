@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/lalathealter/whatwasit/local"
 	"github.com/lalathealter/whatwasit/postgre"
 	tele "gopkg.in/telebot.v3"
@@ -66,3 +68,9 @@ func DelHandler(c tele.Context) error {
 	return c.Send(local.GetMessage(c, "del", serviceName))
 }
 
+func ScheduledCleanHandler() {
+	err := postgre.GetWrapper().CleanOld()
+	if err != nil {
+		log.Print(err)
+	}
+}

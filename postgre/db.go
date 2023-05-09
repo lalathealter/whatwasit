@@ -74,6 +74,17 @@ func presetTables(db *sql.DB) {
 				login VARCHAR(256) NOT NULL
 			)
 		;`,
+		
+		`
+			CREATE TABLE IF NOT EXISTS whatwasit.visits (
+				access_hash CHAR(84) UNIQUE NOT NULL,
+				last_visit TIMESTAMP NOT NULL DEFAULT NOW(),
+				CONSTRAINT access_hash 
+					FOREIGN KEY(access_hash)
+						REFERENCES whatwasit.credentials(access_hash)
+						ON DELETE CASCADE
+			)
+		;`,
 
 	}
 
