@@ -59,7 +59,11 @@ func parseArgs(c tele.Context, argCount int) ([]string, error) {
 	if len(passedArgs) < argCount {
 		return nil, errors.New("err-few-args")
 	}
+	passedArgs = passedArgs[:argCount]
 	for _, val := range passedArgs {
+		if len(val) < 1 {
+			return nil, errors.New("err-empty-arg")
+		}
 		if len(val) > MAX_ARG_LEN {
 			return nil, errors.New("err-long-arg")
 		}

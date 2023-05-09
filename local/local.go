@@ -60,6 +60,7 @@ func GetMessage(c tele.Context, msg string, responseArgs ...any) string {
 	lang, ok := usersLangs[c.Chat().ID]
 	if !ok {
 		SetLocalLanguage(c, defaultLangTag)
+		lang = defaultLangTag
 	}
 	message, ok := messageTemplateMap[lang][msg]
 	if !ok {
