@@ -38,7 +38,10 @@ func main() {
 	scheduleAutoDelete()
 	
 	fmt.Println("Starting the bot...")
-	go http.ListenAndServe("/", nil)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("The bot works as intended"))
+	})
+	go http.ListenAndServe(":"+postgre.GetEnv("PORT"), nil)
 	b.Start()
 }
 
